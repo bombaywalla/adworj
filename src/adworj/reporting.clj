@@ -5,13 +5,13 @@
             [clojure.data.csv :as csv]
             [clojure.set :as set]
             [clojure.java.io :as io])
-  (:import [com.google.api.ads.adwords.lib.jaxb.v201409 ReportDefinition ReportDefinitionReportType]
-           [com.google.api.ads.adwords.lib.jaxb.v201409 DownloadFormat]
-           [com.google.api.ads.adwords.lib.jaxb.v201409 DateRange Selector ReportDefinitionDateRangeType]
+  (:import [com.google.api.ads.adwords.lib.jaxb.v201502 ReportDefinition ReportDefinitionReportType]
+           [com.google.api.ads.adwords.lib.jaxb.v201502 DownloadFormat]
+           [com.google.api.ads.adwords.lib.jaxb.v201502 DateRange Selector ReportDefinitionDateRangeType]
            [com.google.api.ads.adwords.lib.client AdWordsSession]
            [com.google.api.ads.adwords.lib.client.reporting ReportingConfiguration$Builder]
            [com.google.api.client.auth.oauth2 Credential]
-           [com.google.api.ads.adwords.lib.utils.v201409 ReportDownloader DetailedReportDownloadResponseException]
+           [com.google.api.ads.adwords.lib.utils.v201502 ReportDownloader DetailedReportDownloadResponseException]
            [java.util.zip GZIPInputStream]))
 
 (def adwords-date-format (tf/formatter "yyyyMMdd"))
@@ -92,6 +92,9 @@
 (defmacro defreport [name type & field-mappings]
   `(def ~name (report-specification ~type ~@field-mappings)))
 
+(defn parse-integer [s]
+  (Integer/valueOf s))
+
 (defn parse-long [s]
   (Long/valueOf s))
 
@@ -102,46 +105,67 @@
   (/ (Double/valueOf (re-find #"^[\d.]+" s)) 100))
 
 (defreport account-performance ReportDefinitionReportType/ACCOUNT_PERFORMANCE_REPORT
-  :account-currency-code              "AccountCurrencyCode"
-  :account-descriptive-name           "AccountDescriptiveName"
-  :account-time-zone-id               "AccountTimeZoneId"
-  :active-view-cpm                    {:name "ActiveViewCpm" :parse parse-long}
-  :active-view-impressions            {:name "ActiveViewImpressions" :parse parse-long}
-  :ad-network-type-1                  "AdNetworkType1"
-  :ad-network-type-2                  "AdNetworkType2"
-  :average-cpc                        {:name "AverageCpc" :parse parse-long}
-  :average-cpm                        {:name "AverageCpm" :parse parse-long}
-  :average-position                   {:name "AveragePosition" :parse parse-double}
-  :manage-clients?                    "CanManageClients"
-  :click-conversion-rate              {:name "ClickConversionRate" :parse parse-percentage}
-  :click-type                         "ClickType"
-  :clicks                             {:name "Clicks" :parse parse-long}
-  :conversions                        {:name "Conversions" :parse parse-long}
-  :conversion-category-name           "ConversionCategoryName"
-  :conversion-rate-many-per-click     {:name "ConversionRateManyPerClick" :parse parse-percentage}
-  :conversion-tracker-id              "ConversionTrackerId"
-  :conversion-type-name               "ConversionTypeName"
-  :conversion-value                   {:name "ConversionValue" :parse parse-double}
-  :conversions-many-per-click         {:name "ConversionsManyPerClick" :parse parse-long}
-  :cost                               {:name "Cost" :parse parse-long}
-  :cost-per-conversion-many-per-click {:name "CostPerConversionManyPerClick" :parse parse-long}
-  :cost-per-converted-click           {:name "CostPerConvertedClick" :parse parse-long}
-  :ctr                                {:name "Ctr" :parse parse-percentage}
-  :customer-descriptive-name          "CustomerDescriptiveName"
-  :date                               "Date"
-  :device                             "Device"
-  :estimated-cross-device-conversions {:name "EstimatedCrossDeviceConversions" :parse parse-long}
-  :estimated-total-conversion-rate    {:name "EstimatedTotalConversionRate" :parse parse-percentage}
-  :estimated-total-conversion-value   {:name "EstimatedTotalConversionValue" :parse parse-double}
-  :estimated-total-conversions        {:name "EstimatedTotalConversions" :parse parse-long}
-  :external-customer-id               "ExternalCustomerId"
-  :impressions                        "Impressions"
-  :invalid-click-rate                 {:name "InvalidClickRate" :parse parse-percentage}
-  :invalid-clicks                     {:name "InvalidClicks" :parse parse-long}
-  :auto-tagging?                      "IsAutoTaggingEnabled"
-  :test-account?                      "IsTestAccount"
-  :primary-company-name               "PrimaryCompanyName"
-  :slot                               "Slot")
+  :account-currency-code                      "AccountCurrencyCode"
+  :account-descriptive-name                   "AccountDescriptiveName"
+  :account-time-zone-id                       "AccountTimeZoneId"
+  :active-view-cpm                            {:name "ActiveViewCpm" :parse parse-long}
+  :active-view-impressions                    {:name "ActiveViewImpressions" :parse parse-long}
+  :ad-network-type-1                          "AdNetworkType1"
+  :ad-network-type-2                          "AdNetworkType2"
+  :average-cpc                                {:name "AverageCpc" :parse parse-long}
+  :average-cpm                                {:name "AverageCpm" :parse parse-long}
+  :average-position                           {:name "AveragePosition" :parse parse-double}
+  :manage-clients?                            "CanManageClients"
+  :click-conversion-rate                      {:name "ClickConversionRate" :parse parse-percentage}
+  :click-type                                 "ClickType"
+  :clicks                                     {:name "Clicks" :parse parse-long}
+  :content-budget-lost-impression-share       {:name "ContentBudgetLostImpressionShare" :parse parse-percentage}
+  :content-impression-share                   {:name "ContentImpressionShare" :parse parse-percentage}
+  :content-rank-lost-impression-share         {:name "ContentRankLostImpressionShare" :parse parse-percentage}
+  :conversion-category-name                   "ConversionCategoryName"
+  :conversion-rate-many-per-click             {:name "ConversionRateManyPerClick" :parse parse-percentage}
+  :conversion-tracker-id                      "ConversionTrackerId"
+  :conversion-type-name                       "ConversionTypeName"
+  :conversion-value                           {:name "ConversionValue" :parse parse-double}
+  :conversions-many-per-click                 {:name "ConversionsManyPerClick" :parse parse-long}
+  :converted-clicks                           {:name "ConvertedClicks" :parse parse-long}
+  :cost                                       {:name "Cost" :parse parse-long}
+  :cost-per-conversion-many-per-click         {:name "CostPerConversionManyPerClick" :parse parse-long}
+  :cost-per-converted-click                   {:name "CostPerConvertedClick" :parse parse-long}
+  :cost-per-estimated-total-conversion        {:name "CostPerEstimatedTotalConversion" :parse parse-double}
+  :ctr                                        {:name "Ctr" :parse parse-percentage}
+  :customer-descriptive-name                  "CustomerDescriptiveName"
+  :date                                       "Date"
+  :day-of-week                                "DayOfWeek"
+  :device                                     "Device"
+  :estimated-cross-device-conversions         {:name "EstimatedCrossDeviceConversions" :parse parse-long}
+  :estimated-total-conversion-rate            {:name "EstimatedTotalConversionRate" :parse parse-percentage}
+  :estimated-total-conversion-value           {:name "EstimatedTotalConversionValue" :parse parse-double}
+  :estimated-total-conversion-value-per-click {:name "EstimatedTotalConversionValuePerClick" :parse parse-double}
+  :estimated-total-conversion-value-per-cost  {:name "EstimatedTotalConversionValuePerCost" :parse parse-double}
+  :estimated-total-conversions                {:name "EstimatedTotalConversions" :parse parse-long}
+  :external-customer-id                       "ExternalCustomerId"
+  :hour-of-day                                {:name "HourOfDay" :parse parse-integer}
+  :impressions                                "Impressions"
+  :invalid-click-rate                         {:name "InvalidClickRate" :parse parse-percentage}
+  :invalid-clicks                             {:name "InvalidClicks" :parse parse-long}
+  :auto-tagging?                              "IsAutoTaggingEnabled"
+  :test-account?                              "IsTestAccount"
+  :month                                      "Month"
+  :month-of-year                              "MonthOfYear"
+  :primary-company-name                       "PrimaryCompanyName"
+  :quarter                                    "Quarter"
+  :search-budget-lost-impression-share        {:name "SearchBudgetLostImpressionShare" :parse parse-percentage}
+  :search-exact-match-impression-share        {:name "SearchExactMatchImpressionShare" :parse parse-percentage}
+  :search-impression-share                    {:name "SearchImpressionShare" :parse parse-percentage}
+  :search-rank-lost-impression-share          {:name "SearchRankLostImpressionShare" :parse parse-percentage}
+  :slot                                       "Slot"
+  :value-per-conversion-many-per-click        {:name "ValuePerConversionManyPerClick" :parse parse-double}
+  :value-per-converted-click                  {:name "ValuePerConvertedClick" :parse parse-double}
+  :value-per-estimated-total-conversion       {:name "ValuePerEstimatedTotalConversion" :parse parse-double}
+  :view-through-conversions                   {:name "ViewThroughConversions" :parse parse-long}
+  :week                                       "Week"
+  :year                                       {:name "Year" :parse parse-integer})
 
 (defreport keywords-performance ReportDefinitionReportType/KEYWORDS_PERFORMANCE_REPORT
   :account-currency-code                  "AccountCurrencyCode"
@@ -621,53 +645,6 @@
   :value-per-conversion-many-per-click "ValuePerConversionManyPerClick"
   :week                                "Week"
   :year                                "Year")
-
-(defreport ad-extensions-performance ReportDefinitionReportType/AD_EXTENSIONS_PERFORMANCE_REPORT
-  :account-currency-code                "AccountCurrencyCode"
-  :account-descriptive-name             "AccountDescriptiveName"
-  :account-time-zone-id                 "AccountTimeZoneId"
-  :ad-extension-id                      "AdExtensionId"
-  :ad-extension-type                    "AdExtensionType"
-  :ad-network-type-1                    "AdNetworkType1"
-  :ad-network-type-2                    "AdNetworkType2"
-  :approval-status                      "ApprovalStatus"
-  :average-cpc                          "AverageCpc"
-  :average-cpm                          "AverageCpm"
-  :average-position                     "AveragePosition"
-  :average-cost-for-offline-interaction "AverageCostForOfflineInteraction"
-  :campaign-id                          "CampaignId"
-  :click-type                           "ClickType"
-  :clicks                               "Clicks"
-  :conversion-rate                      "ConversionRate"
-  :conversion-rate-many-per-click       "ConversionRateManyPerClick"
-  :conversion-value                     "ConversionValue"
-  :conversions                          "Conversions"
-  :conversions-many-per-click           "ConversionsManyPerClick"
-  :cost                                 "Cost"
-  :cost-per-conversion                  "CostPerConversion"
-  :cost-per-conversion-many-per-click   "CostPerConversionManyPerClick"
-  :ctr                                  "Ctr"
-  :customer-descriptive-name            "CustomerDescriptiveName"
-  :date                                 "Date"
-  :day-of-week                          "DayOfWeek"
-  :device                               "Device"
-  :external-customer-id                 "ExternalCustomerId"
-  :impressions                          "Impressions"
-  :location-extension-source            "LocationExtensionSource"
-  :month                                "Month"
-  :month-of-year                        "MonthOfYear"
-  :num-offline-impressions              "NumOfflineImpressions"
-  :num-offline-interactions             "NumOfflineInteractions"
-  :offline-interaction-cost             "OfflineInteractionCost"
-  :offline-interaction-rate             "OfflineInteractionRate"
-  :primary-company-name                 "PrimaryCompanyName"
-  :quarter                              "Quarter"
-  :slot                                 "Slot"
-  :status                               "Status"
-  :value-per-conversion                 "ValuePerConversion"
-  :view-through-conversions             "ViewThroughConversions"
-  :week                                 "Week"
-  :year                                 "Year")
 
 (defreport campaign-negative-keywords-performance ReportDefinitionReportType/CAMPAIGN_NEGATIVE_KEYWORDS_PERFORMANCE_REPORT
   :account-currency-code                "AccountCurrencyCode"

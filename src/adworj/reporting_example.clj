@@ -18,7 +18,7 @@
                                            :conversion-type-name
                                            :device
                                            :date
-                                           :conversions
+                                           :converted-clicks
                                            :conversion-rate-many-per-click])]
       (doseq [record (take 5 (ar/record-seq report))]
         (println (pr-str record))))))
