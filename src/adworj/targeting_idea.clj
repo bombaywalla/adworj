@@ -21,7 +21,7 @@
 
 (defn targeting-idea-service
   "Create a TargetingIdeaService from an AdWords Session."
-  [^AdWordsSession adwords-session]
+  [adwords-session]
   (let [services (AdWordsServices. )]
     (.get services adwords-session TargetingIdeaServiceInterface)))
 
@@ -59,11 +59,11 @@
 (defn get-targeting-idea-page [service selector]
   (.get service selector))
 
-(defn process-page [page]
-  (doseq [idea (.getEntries page)]
+(defn process-page [page process-idea]
+  (for [idea (.getEntries page)]
     (process-idea idea)))
 
-(defn process-idea [idea]
+(defn print-idea [idea]
   (let [attrmap (Maps/toMap (.getData idea))
         keyword (.getValue (get attrmap AttributeType/KEYWORD_TEXT))
         searchvol (.getValue (get attrmap AttributeType/SEARCH_VOLUME))
@@ -74,3 +74,10 @@
     (doseq [id catidset]
       (printf " %d" id))
     (println)))
+
+(defn get-keyphrase [idea]
+  (let [attrmap (Maps/toMap (.getData idea))
+        keyword (.getValue (get attrmap AttributeType/KEYWORD_TEXT))
+        searchvol (.getValue (get attrmap AttributeType/SEARCH_VOLUME))
+        catidset (set (.getValue (get attrmap AttributeType/CATEGORY_PRODUCTS_AND_SERVICES)))]
+    keyword))
