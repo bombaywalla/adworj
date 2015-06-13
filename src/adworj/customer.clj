@@ -2,7 +2,15 @@
   (:import [com.google.api.ads.adwords.axis.v201502.mcm CustomerServiceInterface]
            [com.google.api.ads.adwords.axis.factory AdWordsServices]))
 
-(defrecord Customer [company-name currency-code customer-id date-time-zone descriptive-name tracking-url-template test-account?])
+(defrecord Customer [auto-tagging-enabled?
+                     can-manage-clients?
+                     company-name
+                     currency-code
+                     customer-id
+                     date-time-zone
+                     descriptive-name
+                     tracking-url-template
+                     test-account?])
 
 (defn customer-service [adwords-session]
   (let [services (AdWordsServices. )]
@@ -10,9 +18,12 @@
 
 (defn customer [customer-service]
   (let [c (.get customer-service)]
-    (map->Customer {:company-name          (.getCompanyName c)
+    (map->Customer {:auto-tagging-enabled? (.getAutoTaggingEnabled c)
+                    :can-manage-clients?   (.getCanManageClients c)
+                    :company-name          (.getCompanyName c)
                     :currency-code         (.getCurrencyCode c)
                     :customer-id           (.getCustomerId c)
                     :date-time-zone        (.getDateTimeZone c)
                     :descriptive-name      (.getDescriptiveName c)
+                    :test-account?         (.getTestAccount c)
                     :tracking-url-template (.getTrackingUrlTemplate c)})))
