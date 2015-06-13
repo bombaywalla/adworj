@@ -8,7 +8,7 @@
         service (at/targeting-idea-service session)
         langparam (at/language-search-parameter "English")
         locparam (at/location-search-parameter "US")
-        netparam (at/network-search-parameter (network-setting :target-google-search true))
+        netparam (at/network-search-parameter (at/network-setting :target-google-search true))
         volparam (at/search-volume-search-parameter 200 100000)
         exclparam (at/excluded-keyword-search-parameter (adwords-keyword "for sale" (keyword-match-type :phrase))
                                                         (adwords-keyword "on sale" (keyword-match-type :phrase))
@@ -34,8 +34,8 @@
                                                                  :competition
                                                                  :keyword-text             
                                                                  :search-volume)
-                                             "en_US"
-                                             "USD")
+                                             (at/locale "English" "US")
+                                             (at/currency "US"))
         ideas (at/get-ideas service selector)]
     (doseq [idea ideas]
       (if show-all

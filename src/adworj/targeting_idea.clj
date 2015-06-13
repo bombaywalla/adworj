@@ -35,6 +35,9 @@
            [com.google.api.ads.adwords.axis.v201502.o TargetingIdeaServiceInterface]
            [com.google.api.ads.common.lib.utils Maps] ))
 
+;; TBD Potentially some of these items (e.g., language) should be placed in some
+;; other namespace (e.g. cm).
+
 (defn targeting-idea-service
   "Create a TargetingIdeaService from an AdWords Session."
   [adwords-session]
@@ -167,10 +170,39 @@
 ;; TBD Do better and read in the csv
 ;; TBD This only deals with countries, not regions smaller than a country.
 (def geo-codes
-  [{:name "United States" :country-code "US"' :id 2840}
+  [{:name "United States" :country-code "US" :id 2840}
+   {:name "Canada" :country-code "CA" :id 2124}
    {:name "Germany" :country-code "DE" :id 2276}
+   {:name "France" :country-code "FR" :id 2250}
    {:name "Sweden" :country-code "SE" :id 2752}
    {:name "Italy" :country-code "IT" :id 2380}])
+
+;; TBD Should currency-codes and geo-codes be merged?
+;; TBD Is there a file that gives all the codes
+;; https://developers.google.com/adwords/api/docs/appendix/currencycodes
+;; http://www.currency-iso.org/en/home/tables/table-a1.html
+(def currency-codes
+  [{:name "United States Dollar" :country-code "US" :code "USD"}
+   {:name "Canadian Dollar" :country-code "CA" :code "CAD"}
+   {:name "Euro" :country-code "DE" :code "EUR"}
+   {:name "Euro" :country-code "FR" :code "EUR"}
+   {:name "Swedish Krona" :country-code "SE" :code "SEK"}
+   {:name "Euro" :country-code "IT" :code "EUR"}])
+
+;; https://developers.google.com/adwords/api/docs/appendix/locales
+(defn locale
+  [language country]
+  (let [lang (:code (or (first (filter #(= language (:name %)) language-codes))
+                        (first (filter #(= language (:code %)) language-codes))))
+        loc (:country-code (or (first (filter #(= country (:name %)) geo-codes))
+                               (first (filter #(= country (:country-code %)) geo-codes))))]
+    (str lang "_" loc)))
+
+(defn currency
+  [country]
+  (let [loc (:country-code (or (first (filter #(= country (:name %)) geo-codes))
+                               (first (filter #(= country (:country-code %)) geo-codes))))]
+    (:code (first (filter #(= loc (:country-code %)) currency-codes)))))
 
 ;; ----------- start of SearchParameter subtypes
 
@@ -206,7 +238,8 @@
                 (doto (Language.)
                   (.setId (:id (or (first (filter #(= name (:name %)) language-codes))
                                    (first (filter #(= name (:code %)) language-codes))
-                                   (throw (RuntimeException. "Invalid language:" name)))))))]
+                                   (throw (RuntimeException. (str "Invalid language:"
+                                                                  name))))))))]
     (doto (LanguageSearchParameter.)
       (.setLanguages (into-array Language langs)))))
 
@@ -216,7 +249,8 @@
                 (doto (Location.)
                   (.setId (:id (or (first (filter #(= name (:name %)) geo-codes))
                                    (first (filter #(= name (:country-code %)) geo-codes))
-                                   (throw (RuntimeException. "Invalid location: " name)))))))]
+                                   (throw (RuntimeException. (str "Invalid location: "
+                                                                  name))))))))]
     (doto (LocationSearchParameter.)
       (.setLocations (into-array Location locns)))))
 
@@ -249,6 +283,8 @@
 
 ;; ----------- end of SearchParameter subtypes
 
+;; TBD Consider an additional signature with Paging as well.
+;; TBD Paging should be elsewhere as well.
 (defn targeting-idea-selector
   "Create a TargetingIdeaSelector.
   Note that Paging is not passed in as a parameter."
@@ -287,14 +323,17 @@
           (for [[k v] attrmap]
             [k (translate-attribute-value  k (.getValue v))]))))
 
+;; TBD Consider providing a lazy version as well
 (defn get-ideas
   "Returns a vector of ideas. Each idea is a map of attributes and values."
   [service selector]
   (let [page-size 100
-        paging (doto (.getPaging selector) ;Note sideeffects Paging in the selector
+        start 0
+        paging (doto (.getPaging selector) ;Note side-effects Paging in the selector
+                 (.setStartIndex (int start))
                  (.setNumberResults (int page-size)))]
     (loop [more-pages true
-           offset 0
+           offset start
            result []]
       (if-not more-pages
         result
