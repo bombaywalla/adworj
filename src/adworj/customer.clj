@@ -1,5 +1,5 @@
 (ns adworj.customer
-  (:import [com.google.api.ads.adwords.axis.v201502.mcm CustomerServiceInterface]
+  (:import [com.google.api.ads.adwords.axis.v201506.mcm CustomerServiceInterface]
            [com.google.api.ads.adwords.axis.factory AdWordsServices]))
 
 (defrecord Customer [auto-tagging-enabled?
