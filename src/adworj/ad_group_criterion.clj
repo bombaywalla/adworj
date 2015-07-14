@@ -9,6 +9,7 @@
            [com.google.api.ads.adwords.axis.v201502.cm BiddableAdGroupCriterion]
            [com.google.api.ads.adwords.axis.v201502.cm NegativeAdGroupCriterion]
            [com.google.api.ads.adwords.axis.v201502.cm CriterionUse]
+           [com.google.api.ads.adwords.axis.v201502.cm UserStatus]
            [com.google.api.ads.adwords.axis.v201502.cm AdGroupCriterionPage]
            [com.google.api.ads.adwords.axis.v201502.cm Selector]
            [com.google.api.ads.adwords.axis.v201502.cm Operator]
@@ -46,12 +47,26 @@
     :remove Operator/REMOVE
     :set Operator/SET
     ))
-  
+
+
+(defn get-value
+  "To get the string value of a criterion-use or a user-status"
+  [arg]
+  (.getValue arg))
+
 (defn criterion-use
   [type]
   (case type
     :biddable CriterionUse/BIDDABLE
     :negative CriterionUse/NEGATIVE
+    ))
+
+(defn user-status
+  [type]
+  (case type
+    :enabled UserStatus/ENABLED
+    :removed UserStatus/REMOVED
+    :paused UserStatus/PAUSED
     ))
 
 (defn ad-group-criterion-field
@@ -78,6 +93,11 @@
   [service & operations]
   (.mutate service (into-array AdGroupCriterionOperation operations)))
 
+(defn exemption-request
+  [pvkey]
+  (doto (ExemptionRequest.)
+    (.setKey pvkey)))
+
 (defn policy-violation-key
   [policy-name violating-text]
   (doto (PolicyViolationKey.)
@@ -95,6 +115,8 @@
         (.setExemptionRequests
          (into-array ExemptionRequest exemption-requests))))))
 
+;; TBD handle other operations on SelectorBuilder
+;; Especially the CriterionUse
 (defn selector-builder
   [ad-group-id fields]                   ;TBD handle empty fields
   (doto (SelectorBuilder.)
@@ -107,6 +129,18 @@
   [builder]
   (.build builder))
 
+;; function to nullify the destination url for given criteria
+(defn set-ad-group-kwds-null-dest-url
+  [service adgcrits]
+  (let [ops (map (fn [adgcrit]
+                   (operation (operator :set)
+                              (doto (BiddableAdGroupCriterion.)
+                                (.setAdGroupId (.getAdGroupId adgcrit))
+                                (.setCriterion (doto (Keyword.)
+                                                 (.setId (.getId (.getCriterion adgcrit)))))
+                                (.setDestinationUrl ""))))
+                 adgcrits)]
+    (apply (partial mutate service) ops)))
 
 (defn get-ad-group-criterion-page
   [service selector]

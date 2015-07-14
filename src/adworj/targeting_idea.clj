@@ -35,7 +35,7 @@
            [com.google.api.ads.adwords.axis.v201502.o TargetingIdeaServiceInterface]
            [com.google.api.ads.common.lib.utils Maps] ))
 
-;; TBD Potentially some of these items (e.g., language) should be placed in some
+;; TODO: Potentially some of these items (e.g., language) should be placed in some
 ;; other namespace (e.g. cm).
 
 (defn targeting-idea-service
@@ -167,8 +167,8 @@
    {:name "Vietnamese" :code "vi" :id 1040}])
 
 ;; https://developers.google.com/adwords/api/docs/appendix/geotargeting
-;; TBD Do better and read in the csv
-;; TBD This only deals with countries, not regions smaller than a country.
+;; TODO: Do better and read in the csv
+;; TODO: This only deals with countries, not regions smaller than a country.
 (def geo-codes
   [{:name "United States" :country-code "US" :id 2840}
    {:name "Canada" :country-code "CA" :id 2124}
@@ -177,8 +177,8 @@
    {:name "Sweden" :country-code "SE" :id 2752}
    {:name "Italy" :country-code "IT" :id 2380}])
 
-;; TBD Should currency-codes and geo-codes be merged?
-;; TBD Is there a file that gives all the codes
+;; TODO: Should currency-codes and geo-codes be merged?
+;; TODO: Is there a file that gives all the codes
 ;; https://developers.google.com/adwords/api/docs/appendix/currencycodes
 ;; http://www.currency-iso.org/en/home/tables/table-a1.html
 (def currency-codes
@@ -264,7 +264,7 @@
   (doto (RelatedToQuerySearchParameter.)
     (.setQueries (into-array String (cons query1 queries)))))
 
-;; TBD should we have [url1 & urls] instead?
+;; TODO: should we have [url1 & urls] instead?
 (defn related-to-url-search-parameter
   [urls & {:keys [include-sub-urls] :or {include-sub-urls false}}]
   (doto (RelatedToUrlSearchParameter.)
@@ -283,8 +283,8 @@
 
 ;; ----------- end of SearchParameter subtypes
 
-;; TBD Consider an additional signature with Paging as well.
-;; TBD Paging should be elsewhere as well.
+;; TODO: Consider an additional signature with Paging as well.
+;; TODO: Paging should be elsewhere as well.
 (defn targeting-idea-selector
   "Create a TargetingIdeaSelector.
   Note that Paging is not passed in as a parameter."
@@ -296,8 +296,8 @@
     (.setRequestedAttributeTypes (into-array AttributeType requested-attribute-types))
     (.setPaging (Paging.))
     (.setSearchParameters (into-array SearchParameter search-parameters))
-    (.setLocaleCode locale-code)        ;https://developers.google.com/adwords/api/docs/appendix/locales
-    (.setCurrencyCode currency-code))) ;https://developers.google.com/adwords/api/docs/appendix/currencycodes
+    (.setLocaleCode locale-code)        ; https://developers.google.com/adwords/api/docs/appendix/locales
+    (.setCurrencyCode currency-code))) ; https://developers.google.com/adwords/api/docs/appendix/currencycodes
   
 (defn get-targeting-idea-page [service selector]
   (.get service selector))
@@ -323,13 +323,13 @@
           (for [[k v] attrmap]
             [k (translate-attribute-value  k (.getValue v))]))))
 
-;; TBD Consider providing a lazy version as well
+;; TODO: Consider providing a lazy version as well
 (defn get-ideas
   "Returns a vector of ideas. Each idea is a map of attributes and values."
   [service selector]
-  (let [page-size 100
+  (let [page-size 1000
         start 0
-        paging (doto (.getPaging selector) ;Note side-effects Paging in the selector
+        paging (doto (.getPaging selector) ; Note side-effects Paging in the selector
                  (.setStartIndex (int start))
                  (.setNumberResults (int page-size)))]
     (loop [more-pages true

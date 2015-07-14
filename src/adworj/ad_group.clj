@@ -2,7 +2,10 @@
   (:import [com.google.api.ads.adwords.axis.v201502.cm AdGroupServiceInterface]
            [com.google.api.ads.adwords.axis.v201502.cm AdGroup]
            [com.google.api.ads.adwords.axis.v201502.cm AdGroupPage]
+           [com.google.api.ads.adwords.axis.v201502.cm AdGroupOperation]
+           [com.google.api.ads.adwords.axis.v201502.cm AdGroupReturnValue]
            [com.google.api.ads.adwords.axis.v201502.cm Selector]
+           [com.google.api.ads.adwords.axis.v201502.cm Operator]
            [com.google.api.ads.adwords.axis.utils.v201502 SelectorBuilder]
            [com.google.api.ads.adwords.lib.selectorfields.v201502.cm AdGroupField]
            [com.google.api.ads.adwords.axis.factory AdWordsServices]))
@@ -33,11 +36,11 @@
     ))
 
 (defn selector-builder
-  [campaign-id fields]
+  [campaign-ids fields]
   (doto (SelectorBuilder.)
     (.fields (into-array AdGroupField fields))
     (.offset (int 0))                   ; to make sure a Paging is created
-    (.equals (ad-group-field :campaign-id) (str campaign-id))
+    (.in (ad-group-field :campaign-id) (into-array String (map str campaign-ids)))
     (.orderAscBy (first fields))))
 
 (defn selector
@@ -48,18 +51,66 @@
   [service selector]
   (.get service selector))
 
+(defn mutate
+  [service & operations]
+  (.mutate service (into-array AdGroupOperation operations)))
+
+(defn operator
+  [type]
+  (case type
+    :add Operator/ADD
+    :remove Operator/REMOVE
+    :set Operator/SET
+    ))
+
+(defn operation
+  [operator adgroup]
+  (doto (AdGroupOperation.)
+    (.setOperator operator)
+    (.setOperand adgroup)))
+
+(defn set-tracking-url-template
+  [service ad-group-id trackingurl]
+  (let [adg (doto (AdGroup.)
+              (.setId ad-group-id)
+              (.setTrackingUrlTemplate trackingurl))
+        op (operation (operator :set) adg)
+        ret (mutate service op)]
+    (if (.getPartialFailureErrors ret) (println "XXX There were errors"))
+    ret))
+
+(defn get-ad-group-by-id
+  [service adgid]
+  (let [fields (map ad-group-field [:id :campaign-id :campaign-name :name :status :tracking-url-template])
+        builder (doto (SelectorBuilder.)
+                  (.fields (into-array AdGroupField fields))
+                  (.offset (int 0))
+                  (.limit (int 1))
+                  (.equalsId adgid))
+        sel (selector builder)
+        page (get-ad-group-page service sel)
+        adgs (.getEntries page)]
+    (if (nil? adgs)
+      nil
+      (if (= (count adgs) 1)
+        (first adgs)
+        nil))))
+
 (defn ad-group-to-clojure
-  [camp]
+  [adg]
   (map->AdWordsAdGroup {
-                        :id (.getId camp)
-                        :name (.getName camp)
-                        :campaign-id (.getCampaignId camp)
-                        :campaign-name (.getCampaignName camp)
-                        :status (.getStatus camp)
+                        :id (.getId adg)
+                        :name (.getName adg)
+                        :campaign-id (.getCampaignId adg)
+                        :campaign-name (.getCampaignName adg)
+                        :status (.getStatus adg)
+                        :tracking-url-template (.getTrackingUrlTemplate adg)
                         }))
 
 (defn get-ad-groups
-  [service selector]
+  ([service selector]
+   (get-ad-groups service selector ad-group-to-clojure))
+  ([service selector convert-fn]
   (let [page-size 100
         start 0
         paging (doto (.getPaging selector) ;Note side-effects Paging in the selector
@@ -76,5 +127,4 @@
               ad-groups (.getEntries page)]
           (recur (< offset total-entries)
                  (+ offset page-size)
-                 (into result (map ad-group-to-clojure ad-groups))))))))
-
+                 (into result (map convert-fn ad-groups)))))))))

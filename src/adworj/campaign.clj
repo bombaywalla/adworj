@@ -29,15 +29,16 @@
     :start-date CampaignField/StartDate
     :end-date CampaignField/EndDate))
 
+;; TBD Would be good to have a "all" to select all fields
+;; TBD Would be good to have a "all" to select all campaigns
 
-
+;; TBD Should the parameters be [& fields]
 (defn selector-builder
-  [offset pagesize fields]
-  (let [builder (SelectorBuilder.)]
-    (.fields builder (into-array CampaignField fields))
-    (.orderAscBy builder (first fields))
-    (.offset builder offset)
-    (.limit builder pagesize)))
+  [fields]
+  (doto (SelectorBuilder.)
+    (.fields (into-array CampaignField fields))
+    (.offset (int 0))                   ; to make sure a Paging is created
+    (.orderAscBy (first fields))))
 
 (defn selector
   [builder]
@@ -58,7 +59,9 @@
                          :end-date (.getEndDate camp) } ))
 
 (defn get-campaigns
-  [service selector]
+  ([service selector]
+   (get-campaigns service selector campaign-to-clojure))
+  ([service selector camp-funct]
   (let [page-size 100
         start 0
         paging (doto (.getPaging selector) ;Note side-effects Paging in the selector
@@ -75,5 +78,4 @@
               campaigns (.getEntries page)]
           (recur (< offset total-entries)
                  (+ offset page-size)
-                 (into result (map campaign-to-clojure campaigns))))))))
-
+                 (into result (map camp-funct campaigns)))))))))
