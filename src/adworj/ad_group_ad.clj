@@ -33,53 +33,40 @@
 
 ;; TODO: Should be in another namespace
 ;; As should others...
-(defn operator
-  [type]
-  (case type
-    :add Operator/ADD
-    :remove Operator/REMOVE
-    :set Operator/SET
-    ))
+(def operator
+  {:add Operator/ADD
+   :remove Operator/REMOVE
+   :set Operator/SET})
   
-(defn ad-group-ad-approval-status
-  [type]
-  (case type
-    :approved AdGroupAdApprovalStatus/APPROVED
-    :disapproved AdGroupAdApprovalStatus/DISAPPROVED
-    :family-safe AdGroupAdApprovalStatus/FAMILY_SAFE
-    :non-family-safe AdGroupAdApprovalStatus/NON_FAMILY_SAFE
-    :porn AdGroupAdApprovalStatus/PORN
-    :unchecked AdGroupAdApprovalStatus/UNCHECKED
-    :unknown AdGroupAdApprovalStatus/UNKNOWN
-    ))
+(def ad-group-ad-approval-status
+  {:approved AdGroupAdApprovalStatus/APPROVED
+   :disapproved AdGroupAdApprovalStatus/DISAPPROVED
+   :family-safe AdGroupAdApprovalStatus/FAMILY_SAFE
+   :non-family-safe AdGroupAdApprovalStatus/NON_FAMILY_SAFE
+   :porn AdGroupAdApprovalStatus/PORN
+   :unchecked AdGroupAdApprovalStatus/UNCHECKED
+   :unknown AdGroupAdApprovalStatus/UNKNOWN})
 
-(defn ad-group-ad-status
-  [type]
-  (case type
-    :enabled AdGroupAdStatus/ENABLED
-    :paused AdGroupAdStatus/PAUSED
-    :disabled AdGroupAdStatus/DISABLED
-    ))
+(def ad-group-ad-status
+  {:enabled AdGroupAdStatus/ENABLED
+   :paused AdGroupAdStatus/PAUSED
+   :disabled AdGroupAdStatus/DISABLED})
 
-;; TODO: really need a way to get all
-(defn ad-group-ad-field
-  [field-name]
-  (case field-name
-    :ad-group-id AdGroupAdField/AdGroupId
-    :ad-group-creative-approval-status AdGroupAdField/AdGroupCreativeApprovalStatus
-    :creative-final-urls AdGroupAdField/CreativeFinalUrls
-    :url AdGroupAdField/Url             ;aka DestinationUrl
-    :display-url AdGroupAdField/DisplayUrl
-    :headline AdGroupAdField/Headline
-    :description1 AdGroupAdField/Description1
-    :description2 AdGroupAdField/Description2
-    :device-preference AdGroupAdField/DevicePreference
-    :id AdGroupAdField/Id
-    :status AdGroupAdField/Status
-    :type AdGroupAdField/Type
-    :creative-tracking-url-template AdGroupAdField/CreativeTrackingUrlTemplate
-    :creative-url-custom-parameters AdGroupAdField/CreativeUrlCustomParameters
-    ))
+(def ad-group-ad-field
+  {:ad-group-id AdGroupAdField/AdGroupId
+   :ad-group-creative-approval-status AdGroupAdField/AdGroupCreativeApprovalStatus
+   :creative-final-urls AdGroupAdField/CreativeFinalUrls
+   :url AdGroupAdField/Url             ;aka DestinationUrl
+   :display-url AdGroupAdField/DisplayUrl
+   :headline AdGroupAdField/Headline
+   :description1 AdGroupAdField/Description1
+   :description2 AdGroupAdField/Description2
+   :device-preference AdGroupAdField/DevicePreference
+   :id AdGroupAdField/Id
+   :status AdGroupAdField/Status
+   :type AdGroupAdField/Type
+   :creative-tracking-url-template AdGroupAdField/CreativeTrackingUrlTemplate
+   :creative-url-custom-parameters AdGroupAdField/CreativeUrlCustomParameters})
 
 (defn get-ad-group-ad-page
   [service selector]

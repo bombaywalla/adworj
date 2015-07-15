@@ -40,54 +40,41 @@
 
 ;; TODO: Should be in another namespace
 ;; As should others...
-(defn operator
-  [type]
-  (case type
-    :add Operator/ADD
-    :remove Operator/REMOVE
-    :set Operator/SET
-    ))
-
+(def operator
+  {:add Operator/ADD
+   :remove Operator/REMOVE
+   :set Operator/SET})
 
 (defn get-value
   "To get the string value of a criterion-use or a user-status"
   [arg]
   (.getValue arg))
 
-(defn criterion-use
-  [type]
-  (case type
-    :biddable CriterionUse/BIDDABLE
-    :negative CriterionUse/NEGATIVE
-    ))
+(def criterion-use
+  {:biddable CriterionUse/BIDDABLE
+   :negative CriterionUse/NEGATIVE})
 
-(defn user-status
-  [type]
-  (case type
-    :enabled UserStatus/ENABLED
-    :removed UserStatus/REMOVED
-    :paused UserStatus/PAUSED
-    ))
+(def user-status
+  {:enabled UserStatus/ENABLED
+   :removed UserStatus/REMOVED
+   :paused UserStatus/PAUSED})
 
-(defn ad-group-criterion-field
-  [field-name]
-  (case field-name
-    :ad-group-id AdGroupCriterionField/AdGroupId
-    :approval-status AdGroupCriterionField/ApprovalStatus
-    :criteria-type AdGroupCriterionField/CriteriaType
-    :criterion-use AdGroupCriterionField/CriterionUse
-    :destination-url AdGroupCriterionField/DestinationUrl
-    :final-app-urls AdGroupCriterionField/FinalAppUrls
-    :final-mobile-urls AdGroupCriterionField/FinalAppUrls
-    :final-urls AdGroupCriterionField/FinalUrls
-    :id AdGroupCriterionField/Id
-    :keyword-match-type AdGroupCriterionField/KeywordMatchType
-    :keyword-text AdGroupCriterionField/KeywordText
-    :status AdGroupCriterionField/Status ; corresponds to BiddableAdGroupCriterion.userStatus
-    :system-serving-status AdGroupCriterionField/SystemServingStatus
-    :tracking-url-template AdGroupCriterionField/TrackingUrlTemplate
-    :url-custom-parameters AdGroupCriterionField/UrlCustomParameters
-    ))
+(def ad-group-criterion-field
+  {:ad-group-id AdGroupCriterionField/AdGroupId
+   :approval-status AdGroupCriterionField/ApprovalStatus
+   :criteria-type AdGroupCriterionField/CriteriaType
+   :criterion-use AdGroupCriterionField/CriterionUse
+   :destination-url AdGroupCriterionField/DestinationUrl
+   :final-app-urls AdGroupCriterionField/FinalAppUrls
+   :final-mobile-urls AdGroupCriterionField/FinalAppUrls
+   :final-urls AdGroupCriterionField/FinalUrls
+   :id AdGroupCriterionField/Id
+   :keyword-match-type AdGroupCriterionField/KeywordMatchType
+   :keyword-text AdGroupCriterionField/KeywordText
+   :status AdGroupCriterionField/Status ; corresponds to BiddableAdGroupCriterion.userStatus
+   :system-serving-status AdGroupCriterionField/SystemServingStatus
+   :tracking-url-template AdGroupCriterionField/TrackingUrlTemplate
+   :url-custom-parameters AdGroupCriterionField/UrlCustomParameters})
 
 (defn mutate
   [service & operations]

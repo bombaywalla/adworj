@@ -19,17 +19,14 @@
   (let [services (AdWordsServices. )]
     (.get services adwords-session CampaignServiceInterface)))
 
-(defn campaign-field
-  [field-name]
-  (case field-name
-    :id CampaignField/Id
-    :name CampaignField/Name
-    :status CampaignField/Status
-    :serving-status CampaignField/ServingStatus
-    :start-date CampaignField/StartDate
-    :end-date CampaignField/EndDate))
+(def campaign-field
+  {:id CampaignField/Id
+   :name CampaignField/Name
+   :status CampaignField/Status
+   :serving-status CampaignField/ServingStatus
+   :start-date CampaignField/StartDate
+   :end-date CampaignField/EndDate})
 
-;; TODO: Would be good to have a "all" to select all fields
 ;; TODO: Would be good to have a "all" to select all campaigns
 
 ;; TODO: Should the parameters be [& fields]

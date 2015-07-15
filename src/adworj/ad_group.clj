@@ -24,16 +24,13 @@
   (let [services (AdWordsServices. )]
     (.get services adwords-session AdGroupServiceInterface)))
 
-(defn ad-group-field
-  [field-name]
-  (case field-name
-    :id AdGroupField/Id
-    :campaign-id AdGroupField/CampaignId
-    :campaign-name AdGroupField/CampaignName
-    :name AdGroupField/Name
-    :status AdGroupField/Status
-    :tracking-url-template AdGroupField/TrackingUrlTemplate
-    ))
+(def ad-group-field
+  {:id AdGroupField/Id
+   :campaign-id AdGroupField/CampaignId
+   :campaign-name AdGroupField/CampaignName
+   :name AdGroupField/Name
+   :status AdGroupField/Status
+   :tracking-url-template AdGroupField/TrackingUrlTemplate})
 
 (defn selector-builder
   [campaign-ids fields]
@@ -55,13 +52,10 @@
   [service & operations]
   (.mutate service (into-array AdGroupOperation operations)))
 
-(defn operator
-  [type]
-  (case type
-    :add Operator/ADD
-    :remove Operator/REMOVE
-    :set Operator/SET
-    ))
+(def operator
+  {:add Operator/ADD
+   :remove Operator/REMOVE
+   :set Operator/SET})
 
 (defn operation
   [operator adgroup]
