@@ -1,13 +1,13 @@
 (ns adworj.ad-group
-  (:import [com.google.api.ads.adwords.axis.v201502.cm AdGroupServiceInterface]
-           [com.google.api.ads.adwords.axis.v201502.cm AdGroup]
-           [com.google.api.ads.adwords.axis.v201502.cm AdGroupPage]
-           [com.google.api.ads.adwords.axis.v201502.cm AdGroupOperation]
-           [com.google.api.ads.adwords.axis.v201502.cm AdGroupReturnValue]
-           [com.google.api.ads.adwords.axis.v201502.cm Selector]
-           [com.google.api.ads.adwords.axis.v201502.cm Operator]
-           [com.google.api.ads.adwords.axis.utils.v201502 SelectorBuilder]
-           [com.google.api.ads.adwords.lib.selectorfields.v201502.cm AdGroupField]
+  (:import [com.google.api.ads.adwords.axis.v201506.cm AdGroupServiceInterface]
+           [com.google.api.ads.adwords.axis.v201506.cm AdGroup]
+           [com.google.api.ads.adwords.axis.v201506.cm AdGroupPage]
+           [com.google.api.ads.adwords.axis.v201506.cm AdGroupOperation]
+           [com.google.api.ads.adwords.axis.v201506.cm AdGroupReturnValue]
+           [com.google.api.ads.adwords.axis.v201506.cm Selector]
+           [com.google.api.ads.adwords.axis.v201506.cm Operator]
+           [com.google.api.ads.adwords.axis.utils.v201506 SelectorBuilder]
+           [com.google.api.ads.adwords.lib.selectorfields.v201506.cm AdGroupField]
            [com.google.api.ads.adwords.axis.factory AdWordsServices]))
 
 (defrecord AdWordsAdGroup [

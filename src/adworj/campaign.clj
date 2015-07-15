@@ -1,10 +1,10 @@
 (ns adworj.campaign
-  (:import [com.google.api.ads.adwords.axis.v201502.cm CampaignServiceInterface]
-           [com.google.api.ads.adwords.axis.v201502.cm Campaign]
-           [com.google.api.ads.adwords.axis.v201502.cm CampaignPage]
-           [com.google.api.ads.adwords.axis.v201502.cm Selector]
-           [com.google.api.ads.adwords.axis.utils.v201502 SelectorBuilder]
-           [com.google.api.ads.adwords.lib.selectorfields.v201502.cm CampaignField]
+  (:import [com.google.api.ads.adwords.axis.v201506.cm CampaignServiceInterface]
+           [com.google.api.ads.adwords.axis.v201506.cm Campaign]
+           [com.google.api.ads.adwords.axis.v201506.cm CampaignPage]
+           [com.google.api.ads.adwords.axis.v201506.cm Selector]
+           [com.google.api.ads.adwords.axis.utils.v201506 SelectorBuilder]
+           [com.google.api.ads.adwords.lib.selectorfields.v201506.cm CampaignField]
            [com.google.api.ads.adwords.axis.factory AdWordsServices]))
 
 (defrecord AdWordsCampaign [id
