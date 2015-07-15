@@ -18,7 +18,7 @@
            [com.google.api.ads.adwords.axis.factory AdWordsServices]))
 
 
-;; TBD There must be a better way of automatically generating the names.
+;; TODO: There must be a better way of automatically generating the names.
 (defrecord AdWordsAdGroupCriterion [
                                     ad-group-criterion-type
                                     ad-group-id
@@ -38,7 +38,7 @@
   (let [services (AdWordsServices. )]
     (.get services adwords-session AdGroupCriterionServiceInterface)))
 
-;; TBD Should be in another namespace
+;; TODO: Should be in another namespace
 ;; As should others...
 (defn operator
   [type]
@@ -115,10 +115,10 @@
         (.setExemptionRequests
          (into-array ExemptionRequest exemption-requests))))))
 
-;; TBD handle other operations on SelectorBuilder
+;; TODO: handle other operations on SelectorBuilder
 ;; Especially the CriterionUse
 (defn selector-builder
-  [ad-group-id fields]                   ;TBD handle empty fields
+  [ad-group-id fields]                   ;TODO: handle empty fields
   (doto (SelectorBuilder.)
     (.fields (into-array AdGroupCriterionField fields))
     (.offset (int 0))                   ; to make sure a Paging is created
@@ -160,19 +160,19 @@
               {
                :approval-status (.getApprovalStatus criterion)
                :destination-url (.getDestinationUrl criterion)
-               :final-urls (.getFinalUrls criterion) ; TBD do better here
+               :final-urls (.getFinalUrls criterion) ; TODO: do better here
                :system-serving-status (.getSystemServingStatus criterion)
                :tracking-url-template (.getTrackingUrlTemplate criterion)
                :user-status (.getUserStatus criterion)
                })
        criterionmap))))
 
-;; TBD refactor to pass in the page getter as a param
+;; TODO: refactor to pass in the page getter as a param
 (defn get-ad-group-criteria
   [service selector]
   (let [page-size 100
         start 0
-        paging (doto (.getPaging selector) ;Note side-effects Paging in the selector
+        paging (doto (.getPaging selector) ; Note side-effects Paging in the selector
                  (.setStartIndex (int start))
                  (.setNumberResults (int page-size)))]
     (loop [more-pages true

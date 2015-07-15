@@ -10,23 +10,15 @@
         locparam (at/location-search-parameter "US")
         netparam (at/network-search-parameter (at/network-setting :target-google-search true))
         volparam (at/search-volume-search-parameter 200 100000)
-        exclparam (at/excluded-keyword-search-parameter (adwords-keyword "for sale" (keyword-match-type :phrase))
-                                                        (adwords-keyword "on sale" (keyword-match-type :phrase))
-                                                        (adwords-keyword "earring" (keyword-match-type :phrase))
-                                                        (adwords-keyword "earrings" (keyword-match-type :phrase))
-                                                        (adwords-keyword "ear ring" (keyword-match-type :phrase))
-                                                        (adwords-keyword "ear rings" (keyword-match-type :phrase))
-                                                        (adwords-keyword "chandelier lamp" (keyword-match-type :exact))
-                                                        (adwords-keyword "chandelier shades" (keyword-match-type :exact)))
         filtparam (at/idea-text-filter-search-parameter :included ["chandelier" "chandeliers"]
-                                                        :excluded ["wooden" "wood" "industrial"
+                                                        :excluded ["wooden" "wood" "industrial" "earring"
                                                                    "decal" "stand" "bulb" "bulbs"
                                                                    "pictures of" "prices" "how to"
                                                                    "fixtures" "fixture" "art" "frame"
                                                                    "floor lamp" "covers" "wholesale"
-                                                                   "cheap" "discount" "parts"])
+                                                                   "cheap" "discount" "parts" "earrings"])
         queryparam (at/related-to-query-search-parameter "chandelier" "chandeliers")
-        selector (at/targeting-idea-selector [queryparam langparam locparam netparam volparam exclparam filtparam]
+        selector (at/targeting-idea-selector [queryparam langparam locparam netparam volparam filtparam]
                                              (at/idea-type :keyword)
                                              (at/request-type :ideas)
                                              (at/attribute-types :average-cpc

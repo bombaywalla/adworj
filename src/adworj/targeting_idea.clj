@@ -12,7 +12,6 @@
            [com.google.api.ads.adwords.axis.v201506.o CategoryProductsAndServicesSearchParameter]
            [com.google.api.ads.adwords.axis.v201506.o CompetitionSearchParameter]
            [com.google.api.ads.adwords.axis.v201506.o CompetitionSearchParameterLevel]
-           [com.google.api.ads.adwords.axis.v201506.o ExcludedKeywordSearchParameter]
            [com.google.api.ads.adwords.axis.v201506.o IdeaTextFilterSearchParameter]
            [com.google.api.ads.adwords.axis.v201506.o IdeaType]
            [com.google.api.ads.adwords.axis.v201506.o IncludeAdultContentSearchParameter]
@@ -215,11 +214,6 @@
   [level1 & levels]
   (doto (CompetitionSearchParameter.)
     (.setLevels (into-array CompetitionSearchParameterLevel (cons level1 levels)))))
-
-(defn excluded-keyword-search-parameter
-  [kwd1 & kwds]
-  (doto (ExcludedKeywordSearchParameter.)
-    (.setKeywords (into-array Keyword (cons kwd1 kwds)))))
 
 (defn idea-text-filter-search-parameter
   [& {:keys [included excluded]

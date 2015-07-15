@@ -29,10 +29,10 @@
     :start-date CampaignField/StartDate
     :end-date CampaignField/EndDate))
 
-;; TBD Would be good to have a "all" to select all fields
-;; TBD Would be good to have a "all" to select all campaigns
+;; TODO: Would be good to have a "all" to select all fields
+;; TODO: Would be good to have a "all" to select all campaigns
 
-;; TBD Should the parameters be [& fields]
+;; TODO: Should the parameters be [& fields]
 (defn selector-builder
   [fields]
   (doto (SelectorBuilder.)

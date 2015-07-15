@@ -107,13 +107,14 @@
                         :tracking-url-template (.getTrackingUrlTemplate adg)
                         }))
 
+;; TODO: refactor these to abstract out the paging behavior
 (defn get-ad-groups
   ([service selector]
    (get-ad-groups service selector ad-group-to-clojure))
   ([service selector convert-fn]
   (let [page-size 100
         start 0
-        paging (doto (.getPaging selector) ;Note side-effects Paging in the selector
+        paging (doto (.getPaging selector) ; Note side-effects Paging in the selector
                  (.setStartIndex (int start))
                  (.setNumberResults (int page-size)))]
     (loop [more-pages true

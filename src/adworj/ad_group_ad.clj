@@ -18,7 +18,7 @@
            [com.google.api.ads.adwords.axis.factory AdWordsServices]))
 
 
-;; TBD There must be a better way of automatically generating the names.
+;; TODO: There must be a better way of automatically generating the names.
 (defrecord AdWordsAdGroupAd [
                              ad-group-id
                              approval-status
@@ -31,7 +31,7 @@
   (let [services (AdWordsServices. )]
     (.get services adwords-session AdGroupAdServiceInterface)))
 
-;; TBD Should be in another namespace
+;; TODO: Should be in another namespace
 ;; As should others...
 (defn operator
   [type]
@@ -61,7 +61,7 @@
     :disabled AdGroupAdStatus/DISABLED
     ))
 
-;; TBD really need a way to get all
+;; TODO: really need a way to get all
 (defn ad-group-ad-field
   [field-name]
   (case field-name
@@ -90,7 +90,7 @@
   (.mutate service (into-array AdGroupAdOperation operations)))
 
 (defn selector-builder
-  [ad-group-ids fields]                   ;TBD handle empty fields
+  [ad-group-ids fields]                   ;TODO: handle empty fields
   (doto (SelectorBuilder.)
     (.fields (into-array AdGroupAdField fields))
     (.offset (int 0))                   ; to make sure a Paging is created
@@ -190,7 +190,7 @@
              (if (every? #(= (.getApiErrorType %) "PolicyViolationError") errs)
                (if (every? #(.getIsExemptable %) errs)
                  (if (= (count addops) (count errs))
-                   (let [exaddops (map add-exemption-to-add-op addops errs)] ;TBD This assumes the addops and the errs are in the same order
+                   (let [exaddops (map add-exemption-to-add-op addops errs)] ;TODO: This assumes the addops and the errs are in the same order
                      (println "Retrying the mutate with exemption requests")
                      (apply (partial mutate service) (concat exaddops delops)))
                    (do (println "Error count does not match addOp count"
@@ -242,8 +242,8 @@
                })
        admap))))
 
-;; TBD refactor to pass in the page getter as a param
-;; TBD See if this can be made lazy
+;; TODO: refactor to pass in the page getter as a param
+;; TODO: See if this can be made lazy
 (defn get-ad-group-ads
   [service selector]
   (let [page-size 100
@@ -264,8 +264,6 @@
                  (+ offset page-size)
                  (into result ad-group-ads)))))))
 
-;; TBD Find out if we can use a function call in another function  before the first function is defined
-;; Answer: seems we have to use declare
 (defn get-ad-group-ads-by-ad-group-id
   [service adgid]
   (let [fields (map ad-group-ad-field [:ad-group-id
