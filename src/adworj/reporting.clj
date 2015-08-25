@@ -862,7 +862,7 @@
   (let [adwords (AdWordsServices. )]
     (.get adwords session ReportDefinitionServiceInterface)))
 
-(def report-type {:ad-performance com.google.api.ads.adwords.axis.v201409.cm.ReportDefinitionReportType/AD_PERFORMANCE_REPORT})
+(def report-type {:ad-performance com.google.api.ads.adwords.axis.v201506.cm.ReportDefinitionReportType/AD_PERFORMANCE_REPORT})
 
 (defn report-fields [service report-type]
   (letfn [(to-clojure [report-field]
