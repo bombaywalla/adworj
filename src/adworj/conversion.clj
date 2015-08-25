@@ -1,7 +1,9 @@
 (ns adworj.conversion
   (:require [clj-time.core :as tc]
-            [clj-time.format :as tf])
-  (:import [com.google.api.ads.adwords.axis.v201506.cm ApiError ApiException OfflineConversionFeed OfflineConversionFeedReturnValue OfflineConversionFeedOperation OfflineConversionFeedServiceInterface ConversionTrackerCategory UploadConversion ConversionTrackerOperation ConversionTrackerServiceInterface Operator Selector]
+            [clj-time.format :as tf]
+            [clojure.set :as s]
+            [clojure.string :as st])
+  (:import [com.google.api.ads.adwords.axis.v201506.cm ApiError RateExceededError ApiException OfflineConversionFeed OfflineConversionFeedReturnValue OfflineConversionFeedOperation OfflineConversionFeedServiceInterface ConversionTrackerCategory UploadConversion ConversionTrackerOperation ConversionTrackerServiceInterface Operator Selector]
            [com.google.api.ads.adwords.axis.factory AdWordsServices]))
 
 
@@ -51,6 +53,8 @@
 
 (def conversion-time-format (tf/formatter "yyyyMMdd HHmmss Z"))
 
+(def provided? (complement st/blank?))
+
 (defn conversion-feed
   "represents an individual conversion event; associated to an ad click through
    the gclid (google click id) parameter"
@@ -58,6 +62,7 @@
                  :or   {time          (tc/now)
                         value         0.0
                         currency-code "GBP"}}]
+  {:pre [(provided? name) (provided? gclid)]}
   (doto (OfflineConversionFeed. )
     (.setConversionName name)
     (.setConversionTime (tf/unparse conversion-time-format time))
@@ -79,6 +84,14 @@
   (to-clojure [_]))
 
 (extend-protocol ToClojure
+  RateExceededError
+  (to-clojure [error] {:rate-name     (.getRateName error)
+                       :rate-scope    (.getRateScope error)
+                       :delay-seconds (.getRetryAfterSeconds error)
+                       :trigger       (.getTrigger error)
+                       :type          (.getApiErrorType error)
+                       :field-path    (.getFieldPath error)
+                       :error         (.getErrorString error)})
   ApiError
   (to-clojure [error] {:trigger    (.getTrigger error)
                        :type       (.getApiErrorType error)
@@ -87,16 +100,37 @@
   OfflineConversionFeedReturnValue
   (to-clojure [return] (map to-clojure (.getValue return)))
   OfflineConversionFeed
-  (to-clojure [feed] {:gclid (.getGoogleClickId feed)
-                      :name  (.getConversionName feed)
-                      :time  (tf/parse conversion-time-format (.getConversionTime feed))
-                      :value (.getConversionValue feed)
+  (to-clojure [feed] {:gclid    (.getGoogleClickId feed)
+                      :name     (.getConversionName feed)
+                      :time     (tf/parse conversion-time-format (.getConversionTime feed))
+                      :value    (.getConversionValue feed)
                       :currency (.getConversionCurrencyCode feed)}))
+
+(defn- decorate-errors
+  [conversion-feeds errors]
+  (let [opidx #"operations\[(\d+)\].*"]
+    (letfn [(assoc-conversion [{:keys [field-path] :as error}]
+              (if-let [[_ index] (re-matches opidx field-path)]
+                (let [indexint (Integer/valueOf index)]
+                  (assoc error
+                    :feed-index indexint
+                    :conversion (nth conversion-feeds indexint)))
+                error))]
+      (map assoc-conversion errors))))
 
 (defn upload-conversions
   [session conversion-feeds]
   (let [service (conversion-feed-service session)
         ops (map add-feed-op conversion-feeds)]
-    (try {:conversions (to-clojure (.mutate service (into-array OfflineConversionFeedOperation ops)))}
+    (try {:conversions (to-clojure (.mutate service
+                                            (into-array OfflineConversionFeedOperation ops)))
+          :succeeded-indexes (range (count conversion-feeds))}
          (catch ApiException e
-           {:errors (map to-clojure (.getErrors e))}))))
+           (let [errs (->> (.getErrors e)
+                           (map to-clojure)
+                           (decorate-errors conversion-feeds))
+                 failed (set (map :feed-index errs))
+                 all    (set (range (count conversion-feeds)))]
+             {:failed-indexes    failed
+              :succeeded-indexes (s/difference all failed)
+              :errors            errs})))))
