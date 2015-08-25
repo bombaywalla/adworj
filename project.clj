@@ -4,8 +4,8 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.7.0"]
-                 [org.clojure/data.csv "0.1.2"]
-                 [com.google.api-ads/ads-lib "2.2.0"]
-                 [com.google.api-ads/adwords-axis "2.2.0"]
-                 [clj-time "0.8.0"]
-                 [joda-time "2.6"]])
+                 [org.clojure/data.csv "0.1.3"]
+                 [com.google.api-ads/ads-lib "2.3.0"]
+                 [com.google.api-ads/adwords-axis "2.3.0"]
+                 [clj-time "0.11.0"]
+                 [joda-time "2.8.2"]])
