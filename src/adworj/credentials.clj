@@ -79,6 +79,11 @@
       (.withClientCustomerId b client-customer-id))
     (.build b)))
 
+(defn get-client-customer-id [session]
+  (.getClientCustomerId session))
+
+(defn get-oauth2-credential [session]
+  (.getOAuth2Credential session))
 
 (comment
   (def secrets (client-secrets "./ads.properties"))

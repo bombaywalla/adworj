@@ -20,9 +20,9 @@
 
 ;; TODO: There must be a better way of automatically generating the names.
 (defrecord AdWordsAdGroupAd [
+                             ad
                              ad-group-id
                              approval-status
-                             ad
                              status
                              ])
 
@@ -221,7 +221,7 @@
                :ad (.getAd ad)
                }]
     (map->AdWordsAdGroupAd
-     (if (= (.getAdType (.getAd ad) "TextAd"))
+     (if (= (.getAdType (.getAd ad)) "TextAd")
        (merge admap
               {
                :approval-status (.getApprovalStatus ad)
@@ -253,20 +253,7 @@
 
 (defn get-ad-group-ads-by-ad-group-id
   [service adgid]
-  (let [fields (map ad-group-ad-field [:ad-group-id
-                                       :ad-group-creative-approval-status
-                                       :creative-final-urls
-                                       :url
-                                       :display-url
-                                       :headline
-                                       :description1
-                                       :description2
-                                       :device-preference
-                                       :id
-                                       :status
-                                       :type
-                                       :creative-tracking-url-template
-                                       :creative-url-custom-parameters])
+  (let [fields (vals ad-group-ad-field)
         builder (doto (SelectorBuilder.)
                   (.fields (into-array AdGroupAdField fields))
                   (.offset (int 0))

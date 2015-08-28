@@ -9,6 +9,7 @@
            [com.google.api.ads.adwords.axis.v201506.cm BiddableAdGroupCriterion]
            [com.google.api.ads.adwords.axis.v201506.cm NegativeAdGroupCriterion]
            [com.google.api.ads.adwords.axis.v201506.cm CriterionUse]
+           [com.google.api.ads.adwords.axis.v201506.cm CriterionType]
            [com.google.api.ads.adwords.axis.v201506.cm UserStatus]
            [com.google.api.ads.adwords.axis.v201506.cm AdGroupCriterionPage]
            [com.google.api.ads.adwords.axis.v201506.cm Selector]
@@ -23,13 +24,23 @@
                                     ad-group-criterion-type
                                     ad-group-id
                                     approval-status
+                                    bid-modifier
+                                    bidding-strategy-configuration
                                     criterion
                                     criterion-use
                                     destination-url
-                                    id
+                                    disapproval-reasons
+                                    experiment-data
+                                    final-app-urls
+                                    final-mobile-urls
                                     final-urls
+                                    first-page-cpc
+                                    labels
+                                    quality-info
                                     system-serving-status
+                                    top-of-page-cpc
                                     tracking-url-template
+                                    url-custom-parameters
                                     user-status
                                     ])
 
@@ -49,6 +60,36 @@
   "To get the string value of a criterion-use or a user-status"
   [arg]
   (.getValue arg))
+
+(def criterion-type
+  {
+   :ad-schedule CriterionType/AD_SCHEDULE
+   :age-range CriterionType/AGE_RANGE
+   :app-payment-model CriterionType/APP_PAYMENT_MODEL
+   :carrier CriterionType/CARRIER
+   :content-label CriterionType/CONTENT_LABEL
+   :gender CriterionType/GENDER
+   :ip-block CriterionType/IP_BLOCK
+   :keyword CriterionType/KEYWORD
+   :language CriterionType/LANGUAGE
+   :location CriterionType/LOCATION
+   :location-groups CriterionType/LOCATION_GROUPS
+   :mobile-application CriterionType/MOBILE_APPLICATION
+   :mobile-device CriterionType/MOBILE_DEVICE
+   :operating-system-version CriterionType/OPERATING_SYSTEM_VERSION
+   :placement CriterionType/PLACEMENT
+   :platform CriterionType/PLATFORM
+   :product-partition CriterionType/PRODUCT_PARTITION
+   :product-scope CriterionType/PRODUCT_SCOPE
+   :proximity CriterionType/PROXIMITY
+   :unknown CriterionType/UNKNOWN
+   :user-interest CriterionType/USER_INTEREST
+   :user-list CriterionType/USER_LIST
+   :vertical CriterionType/VERTICAL
+   :webpage CriterionType/WEBPAGE
+   :youtube-channel CriterionType/YOUTUBE_CHANNEL
+   :youtube-video CriterionType/YOUTUBE_VIDEO
+   })
 
 (def criterion-use
   {:biddable CriterionUse/BIDDABLE
@@ -175,3 +216,13 @@
                  (+ offset page-size)
                  (into result ad-group-criteria)))))))
 
+(defn get-ad-group-criteria-by-ad-group-id
+  [service adgid]
+  (let [fields (vals ad-group-criterion-field)
+        builder (doto (SelectorBuilder.)
+                  (.fields (into-array AdGroupCriterionField fields))
+                  (.offset (int 0))
+                  (.equals (ad-group-criterion-field :ad-group-id) (str adgid)))
+        sel (selector builder)
+        crits (get-ad-group-criteria service sel)]
+    crits))
